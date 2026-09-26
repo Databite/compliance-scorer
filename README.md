@@ -19,18 +19,22 @@ Rule-based checks are cheap and deterministic, so they run first to catch anythi
 
 This is a prototype built to demonstrate the interaction pattern and architecture, not a validated compliance tool. It has not been reviewed by legal or clinical research compliance experts, and it should not be used to approve or reject a real consent form.
 
+## Known limitations
+
+Two real issues surfaced during development, both fixed here but worth naming for anyone extending this:
+
+1. **Response parsing broke on a specific Claude output format.** The initial implementation assumed the API always returns a single text block, but Claude can return a separate internal reasoning block alongside the final answer. The code now explicitly filters for text-type blocks only, but this is a good reminder that API response shapes shouldn't be assumed without checking the actual response structure.
+
+2. **Truncated responses at low token limits.** The original `max_tokens` setting was occasionally too low to let Claude complete all three readability check lines, resulting in a cut-off response the user would see as an incomplete answer rather than an error. Raising the limit resolved it for the cases tested here, but a production version should validate that the response actually reached a natural stopping point, rather than assuming any returned text is complete.
+
+Neither issue is caught automatically today, both were found through manual testing. A production version would want automated tests covering both cases, a multi-block response and a response near the token limit, rather than relying on someone noticing a cut-off answer during a demo.
+
 ## Tech stack
 
 - Python
 - Streamlit (interface)
 - Anthropic API (Claude) for the language judgment layer
 
-## Running it locally
+## Live Demo
 
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install streamlit anthropic
-export ANTHROPIC_API_KEY="your-key-here"
-streamlit run app.py
-```
+https://compliance-scorer-c8krr3htfin6ogvqdmzzvq.streamlit.app/
