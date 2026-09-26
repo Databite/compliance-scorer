@@ -2,7 +2,8 @@ import streamlit as st
 from anthropic import Anthropic
 import os
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+api_key = st.secrets.get("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY"))
+client = Anthropic(api_key=api_key)
 MODEL = "claude-sonnet-5"
 
 INPUT_COST_PER_1K = 0.003
