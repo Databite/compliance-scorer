@@ -50,7 +50,7 @@ AMBIGUOUS_LANGUAGE: [Pass/Flag/Fail] - [one sentence reason]
 """
     response = client.messages.create(
         model=MODEL,
-        max_tokens=300,
+        max_tokens=500,
         messages=[{"role": "user", "content": prompt}]
     )
     input_tokens = response.usage.input_tokens
