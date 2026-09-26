@@ -2,7 +2,11 @@ import streamlit as st
 from anthropic import Anthropic
 import os
 
-api_key = st.secrets.get("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY"))
+try:
+    api_key = st.secrets["ANTHROPIC_API_KEY"]
+except Exception:
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+
 client = Anthropic(api_key=api_key)
 MODEL = "claude-sonnet-5"
 
