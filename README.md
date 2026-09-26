@@ -38,3 +38,6 @@ Neither issue is caught automatically today, both were found through manual test
 ## Live Demo
 
 https://compliance-scorer-c8krr3htfin6ogvqdmzzvq.streamlit.app/
+
+
+See [HANDOFF.md](HANDOFF.md) for engineering handoff notes, open questions, and what this prototype deliberately doesn't solve.
