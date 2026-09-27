@@ -71,6 +71,14 @@ AMBIGUOUS_LANGUAGE: [Pass/Flag/Fail] - [one sentence reason]
 """
 
 def parse_readability_result(result_text):
+    """Parse Claude's structured text response into a category dict.
+
+    Expects one line per category in the exact format the prompt requests:
+    "CATEGORY: [Pass/Flag/Fail] - [reason]". This is string-matched rather
+    than JSON-parsed because the prompt asks for a fixed, simple line
+    format; if that prompt format changes, this parsing logic must change
+    with it.
+    """
     categories = {}
     for line in result_text.splitlines():
         for cat in ["READABILITY", "UNDUE_INDUCEMENT", "AMBIGUOUS_LANGUAGE"]:
@@ -120,6 +128,17 @@ REASON: [one sentence explanation]
 """
 
 def attempt_fix_with_retry(original_text, category, reason, max_attempts=2):
+    """Draft a fix for a flagged issue, then have Claude verify its own fix.
+
+    This is a self-checking loop, not a single fix-and-done call: each
+    rewrite is re-submitted to Claude as a fresh review (recheck_fix_prompt)
+    before being accepted. If the recheck still fails, it retries with a
+    note telling the model its previous attempt didn't work, up to
+    max_attempts, rather than silently accepting a fix that doesn't
+    actually resolve the flagged issue. Returns a tuple of
+    (resolved, final_text, attempts_log, total_cost) so the caller can show
+    the full attempt history, not just the final outcome.
+    """
     total_cost = 0.0
     attempts_log = []
     previous_attempt = None
